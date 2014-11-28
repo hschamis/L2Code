@@ -84,18 +84,18 @@ void FindMinRange(uint16_t *WordArray){
 
 
 	for(int i = 0; i < 16; i++){
-                for (int j=1; j<=7; j++){
+				for (int j=1; j<=7; j++){
 			if (j==7){
-                                WordArray[i+24]=14;     //Range
-                                WordArray[i+8]=0;       //Minimum
-                        	cout << "Ranges more than 7! At packet " << (WordArray[1]&0x000F) << " event " << (WordArray[1]&0x00F0) << " - channel " << i << endl;
+								WordArray[i+24]=14;     //Range
+								WordArray[i+8]=0;       //Minimum
+							cout << "Ranges more than 7! At packet " << (WordArray[1]&0x000F) << " event " << (WordArray[1]&0x00F0) << " - channel " << i << endl;
 			}
-                        if (RANGE[i]<pow(2,j)){              /* Changed to >= so if you have 4, 8, 16, etc, bits it'll round up. */
-                                WordArray[i+24]=j;
-                                break;
-                        }
-                }
-        }
+						if (RANGE[i]<pow(2,j)){              /* Changed to >= so if you have 4, 8, 16, etc, bits it'll round up. */
+								WordArray[i+24]=j;
+								break;
+						}
+				}
+		}
 
 }
 ////////////// Function that compresses a single packet ///////////
@@ -181,53 +181,53 @@ int Compress(uint16_t *decompWords, uint16_t *CompWords){
 	
 int main(){
 
-    uint16_t DecompressedWords[ALL_WORDS] = {0};	//Array to store single packet of decompressed words, read in from file
-    uint16_t CompressedWords[ALL_WORDS] = {0};		//Array to store final compressed words
-    uint16_t CenterOfEnergy[6] = {0};			//Array to store COE information from the file
-    int TotalCompWords;					//Total energy words after compression + 8 headers + 16 min + 16 ranges + 6 COE words
-    int BinPlace = 0;					//Total energy words after compression
-    int RunningCount = 0;				//Sum of the total words written to file 
-    int LastEvent = 0;					//Stores the last header's event stamp 
-    int TotalInput;					//Total number of bytes in input file
-    int PacketMax;					//Total number of packets in input file
-    int CheckPacket = 0;				//Integer than goes from 0 to 15 that should match the packet stamp on incoming packets
-    int CheckPacket2 = 0;				//Integer than goes from 0 to 15 that should match the packet stamp on outgoing packets
+	uint16_t DecompressedWords[ALL_WORDS] = {0};	//Array to store single packet of decompressed words, read in from file
+	uint16_t CompressedWords[ALL_WORDS] = {0};		//Array to store final compressed words
+	uint16_t CenterOfEnergy[6] = {0};			//Array to store COE information from the file
+	int TotalCompWords;					//Total energy words after compression + 8 headers + 16 min + 16 ranges + 6 COE words
+	int BinPlace = 0;					//Total energy words after compression
+	int RunningCount = 0;				//Sum of the total words written to file 
+	int LastEvent = 0;					//Stores the last header's event stamp 
+	int TotalInput;					//Total number of bytes in input file
+	int PacketMax;					//Total number of packets in input file
+	int CheckPacket = 0;				//Integer than goes from 0 to 15 that should match the packet stamp on incoming packets
+	int CheckPacket2 = 0;				//Integer than goes from 0 to 15 that should match the packet stamp on outgoing packets
 
-    //Set parameters to read and write files
-    char read_file[256];
-    char write_file[256];
-    FILE * run_file;
-    FILE * output_file;
+	//Set parameters to read and write files
+	char read_file[256];
+	char write_file[256];
+	FILE * run_file;
+	FILE * output_file;
 
-    //Specify the nodes and slots to run through (integers in file names)
-    for (int node=5; node<6; node++){
-	if((node==103)|(node==106)|(node==111)|(node==113)){continue;}
-    	for (int slot=7; slot<8;slot++){
-        	if(slot==12){continue;}
-		CheckPacket=0;
-		CheckPacket2=0;
-		
-		//Open files to read from and write to
-        	sprintf(read_file, "/mydaq/crymph/uncompressed/run15703_node%d_slot%d_uncompressed.bin", node, slot);
-		sprintf(write_file,"/sudaq/jessimic/run15703_node%d_slot%d_compressed.bin", node, slot );
-        	run_file=fopen64(read_file,"rb");
-		output_file = fopen(write_file,"wb");
-		//Find how many words in file
-		fseek(run_file, -2, SEEK_END);
-		TotalInput = ftell(run_file)/2;				//Gives size of file, divided by 2 bytes to find how many words;
-		PacketMax = (TotalInput/WORDS_WITHOUT_MINRANGE);	//Divde by the number of words in uncompressed file to find total number of packets
-		rewind(run_file);					//set position inside file to beginning
-	
-		cout << "Working on Node " << node << " Slot " << slot <<"."<<endl;
+	//Specify the nodes and slots to run through (integers in file names)
+	for (int node=5; node<6; node++){
+		if((node==103)|(node==106)|(node==111)|(node==113)){continue;}
+		for (int slot=7; slot<8;slot++){
+			if(slot==12){continue;}
+			CheckPacket=0;
+			CheckPacket2=0;
 			
+			//Open files to read from and write to
+			sprintf(read_file, "/home/Hanna/CompDecomp/run15703_node%d_slot%d_uncompressed.bin", node, slot);
+			sprintf(write_file,"/home/Hanna/L2Code/run15703_node%d_slot%d_compressed.bin", node, slot );
+			run_file=fopen64(read_file,"rb");
+			output_file = fopen(write_file,"wb");
+			//Find how many words in file
+			fseek(run_file, -2, SEEK_END);
+			TotalInput = ftell(run_file)/2;				//Gives size of file, divided by 2 bytes to find how many words;
+			PacketMax = (TotalInput/WORDS_WITHOUT_MINRANGE);	//Divde by the number of words in uncompressed file to find total number of packets
+			rewind(run_file);					//set position inside file to beginning
+		
+			cout << "Working on Node " << node << " Slot " << slot <<"."<<endl;
+				
 			//Take each Packet individually to compress
 			for (int H=0; H<PacketMax; H++){
-	   			if (run_file == NULL){cout << "Run File Null at " << H << endl;}
+				if (run_file == NULL){cout << "Run File Null at " << H << endl;}
 				//Read words into Decompressed Array
 				fread(DecompressedWords, sizeof(uint16_t),ADC_HEADERS+ENERGY_WORDS+COE_WORDS, run_file);
-            			
+
 				//Flip the endianess of the energy words;
-            			FlipStuff(DecompressedWords);
+				FlipStuff(DecompressedWords);
 					
 				if((DecompressedWords[1]&0x00F0)==LastEvent && (DecompressedWords[1]&0x000F)==0){
 					//cout << "SAME EVENT AFTER 16 PACKETS AT " << H << endl;
@@ -239,17 +239,17 @@ int main(){
 					cout << "SKIPPED A PACKET IN DECOMP PACKET " << H << " Event Number = " << (DecompressedWords[1]&0x00F0) << " packet = " << (DecompressedWords[1]&0x000F) << endl;
 				}
 				if (CheckPacket < 15){
-                                        CheckPacket++;			//Increase CheckPacket number by one, if packet dropped this will not match
-                                }
-                                else{
-                                        CheckPacket = 0;		//reset CheckPacket once at 15 since the next packet should have stamp 0
-                                }	
-		 		if((DecompressedWords[1]&0x000F) == 15){
-                        		LastEvent = (DecompressedWords[1]&0x00F0);
-                		}
+					CheckPacket++;			//Increase CheckPacket number by one, if packet dropped this will not match
+				}
+				else{
+					CheckPacket = 0;		//reset CheckPacket once at 15 since the next packet should have stamp 0
+				}	
+				if((DecompressedWords[1]&0x000F) == 15){
+					LastEvent = (DecompressedWords[1]&0x00F0);
+				}
 				if((DecompressedWords[1]&0x00F0)==LastEvent && (DecompressedWords[1]&0x000F)==0){	//Check Event is new after 16 packets 
-                                        //cout << "SAME EVENT AFTER 16 PACKETS AT " << H << endl;
-                                }                          
+					//cout << "SAME EVENT AFTER 16 PACKETS AT " << H << endl;
+				}                          
 
 				//Insert COE words into the last 6 places of the Decompressed Words Array
 				for (int i = 0; i < COE_WORDS; i++){
@@ -259,40 +259,34 @@ int main(){
 				//Find the Min & Max in uncompressed file, use to create Min & Range headers
 				FindMinRange(DecompressedWords);
 
-            			//Compression Function
-            			BinPlace = Compress(DecompressedWords, CompressedWords);	//Call compress function, return number of compressed energy words
-	   			TotalCompWords = BinPlace + ALL_HEADERS + COE_WORDS;				//find total words in compress packet including headers, min, range, energy words, and COE words
-	  
-	    			//Checks done on Compressed Word Array
-	    			//cout << "Comp Event Number = " << (CompressedWords[1]&0x00F0) << " packet = " << (CompressedWords[1]&0x000F) << endl;  
-	   			if((CompressedWords[1]&0x000F) != CheckPacket2){	//compares packet stamp in header to running integer
-                        		cout << "SKIPPED A PACKET IN COMP PACKET " << H << " Event Number = " << (CompressedWords[1]&0x00F0) << " packet = " << (CompressedWords[1]&0x000F) << endl;
-                		}
-                		if (CheckPacket2 < 15){
-                        		CheckPacket2++;			//Increase CheckPacket number by one, if packet dropped this will not match
-                		}
-                		else{
-                        		CheckPacket2 = 0;		//reset CheckPacket once at 15 since the next packet should have stamp 0
-                		}
+				//Compression Function
+				BinPlace = Compress(DecompressedWords, CompressedWords);	//Call compress function, return number of compressed energy words
+				TotalCompWords = BinPlace + ALL_HEADERS + COE_WORDS;				//find total words in compress packet including headers, min, range, energy words, and COE words
 
-	    
-	   			//Change Endianness again for output
-	   			FlipBack(CompressedWords);
-
- 
-            			//Write Compressed packet to output file
-            			fwrite(CompressedWords, sizeof(uint16_t), TotalCompWords, output_file);
-            			RunningCount = RunningCount + TotalCompWords;			//Sum of total words written to file, used for checks
-	    			BinPlace = 0;							//reset the compressed word count
-
-        		}
-
+				//Checks done on Compressed Word Array
+				//cout << "Comp Event Number = " << (CompressedWords[1]&0x00F0) << " packet = " << (CompressedWords[1]&0x000F) << endl;  
+				if((CompressedWords[1]&0x000F) != CheckPacket2){	//compares packet stamp in header to running integer
+					cout << "SKIPPED A PACKET IN COMP PACKET " << H << " Event Number = " << (CompressedWords[1]&0x00F0) << " packet = " << (CompressedWords[1]&0x000F) << endl;
+				}
+				if (CheckPacket2 < 15){
+					CheckPacket2++;			//Increase CheckPacket number by one, if packet dropped this will not match
+				}
+				else{
+					CheckPacket2 = 0;		//reset CheckPacket once at 15 since the next packet should have stamp 0
+				}
+				//Change Endianness again for output
+				FlipBack(CompressedWords);
+				//Write Compressed packet to output file
+				fwrite(CompressedWords, sizeof(uint16_t), TotalCompWords, output_file);
+				RunningCount = RunningCount + TotalCompWords;			//Sum of total words written to file, used for checks
+				BinPlace = 0;							//reset the compressed word count
+			}
 			cout << "Node #" << node <<" , Slot #" << slot << " done!" << endl;
-        		fclose(run_file);
-        		fclose(output_file);
-    		}
+			fclose(run_file);
+			fclose(output_file);
+		}
 
 	}
 
-    return 0;
+	return 0;
 }
