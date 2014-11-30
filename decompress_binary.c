@@ -18,8 +18,8 @@
 #define WORDS_WITHOUT_MINRANGE 1038
 
 using namespace std;
-void FindRows (uint16_t *HeaderArray, int &CompWords){
-	/*int TotalBits = 0;
+/*void FindRows (uint16_t *HeaderArray, int &CompWords){
+	int TotalBits = 0;
 	int Rows;
 	for (int j = 24; j < 40; j++){
 		if((HeaderArray[j]&0x3FFF)!=0){
@@ -29,9 +29,9 @@ void FindRows (uint16_t *HeaderArray, int &CompWords){
 	if (TotalBits%14!=0){
 		Rows++;
 	}}
-	CompWords=Rows*64;*/
+	CompWords=Rows*64;
 	//Something different
-}
+}*/
 void FlipStuff(uint16_t *WordArray, int N) {
 	uint16_t Half1, Half2;
 	for (int h=0; h<N; h++){
@@ -44,7 +44,7 @@ void Decompress(uint16_t *CompressedWords, uint16_t *DecompressedWords){
 	int Ranges[16] = {0};
 	int newCounter;
 	for (int i = 24; i<40; i++){
-		Ranges[i-24]=(CompressedWords[(i-8)%16];
+		Ranges[i-24]=CompressedWords[(i-8)%16];
 	}
 	for (int j=0; j<ALL_HEADERS; j++){
 		DecompressedWords[j]=CompressedWords[j]|0xC000;
@@ -138,7 +138,7 @@ int main(){
 	//declare arrays
 	uint16_t CompressedWords[ALL_WORDS] = {0};
 	uint16_t DecompressedWords[ALL_WORDS] = {0};
-	uint16_t HeaderArray[ALL_HEADERS]= {0};
+	uint16_t HeaderArray[4]= {0};	// Only first 4 words to find total number of compressed words
 	// declare int variables
 	int BinPlace = 0;
 	int TotalEvents = 8;
@@ -146,26 +146,31 @@ int main(){
 	int CWords;
 	
 	// create file variables / filename variables
-	char output_file[256]= "/sudaq/jessimic/decompressed/run15703_node2_slot5_decompressed.bin";
-	char input_file[256] = "/sudaq/jessimic/compressed/run15703_node2_slot5_compressed.bin";
+	char output_file[256]= "run15703_node5_slot7_decompressed.bin";
+	char input_file[256] = "run15703_node5_slot7_compressed.bin";
 	FILE * run_file;
 	//FILE * output_packet_file; 
 	run_file = fopen(input_file, "rb");
 	FILE * out_file;
 	out_file = fopen(output_file, "wb");	
-	for (int i = 0; i < 10; i ++){		
+	for (int i = 0; i < 1; i ++){		
 	// read the headers to find the number of words to read.
-		fread(HeaderArray, sizeof(uint16_t), ALL_HEADERS, run_file); 
+		fread(HeaderArray, sizeof(uint16_t), 4, run_file); 
 		int N= sizeof(HeaderArray)/sizeof(HeaderArray[0]);
 		FlipStuff(HeaderArray,N); // Flips the headers
-		FindRows(HeaderArray,CWords); //<-- Gets # of words to read.
+		for (int i =0; i<4; i++){
+			cout << HeaderArray[i] << endl;
+		}
+		//FindRows(HeaderArray,CWords); //<-- Gets # of words to read.
+		cout<< "Headers: " << HeaderArray[2] << "	" << HeaderArray[3] << endl;
+		cout<< (HeaderArray[2]&0x00FF) << "	" << (HeaderArray[3]&0x00FF) << endl;
+		cout<< "Compressed Words = " << CWords << endl;
 	// Put headers in CompressedWords
-		for (int j=0;j<ALL_HEADERS; j++){
+		for (int j=0;j<N; j++){
 			CompressedWords[j]=HeaderArray[j];
 		}
 	// read the rest of the array
-		rewind(run_file);
-		fread(CompressedWords, sizeof(uint16_t), ALL_HEADERS+CWords+COE_WORDS, run_file);// NOT SURE HOW MANY WORDS IT SHOULD READ - does it start from where it left off?
+		fread(CompressedWords, sizeof(uint16_t), ALL_HEADERS+CWords+COE_WORDS-4, run_file);// NOT SURE HOW MANY WORDS IT SHOULD READ - does it start from where it left off?
 	// Flip endianness: 
 		N = ALL_HEADERS+CWords+COE_WORDS;
 		FlipStuff(CompressedWords,N);
