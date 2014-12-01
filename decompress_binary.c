@@ -158,12 +158,13 @@ int main(){
 		fread(HeaderArray, sizeof(uint16_t), 4, run_file); 
 		int N= sizeof(HeaderArray)/sizeof(HeaderArray[0]);
 		FlipStuff(HeaderArray,N); // Flips the headers
-		for (int i =0; i<4; i++){
+		/*for (int i =0; i<4; i++){
 			cout << HeaderArray[i] << endl;
-		}
+		}*/
 		//FindRows(HeaderArray,CWords); //<-- Gets # of words to read.
 		cout<< "Headers: " << HeaderArray[2] << "	" << HeaderArray[3] << endl;
 		cout<< (HeaderArray[2]&0x00FF) << "	" << (HeaderArray[3]&0x00FF) << endl;
+		CWords = (((HeaderArray[2]&0x00FF)<<8)|(HeaderArray[3]&0x00FF));
 		cout<< "Compressed Words = " << CWords << endl;
 	// Put headers in CompressedWords
 		for (int j=0;j<N; j++){
