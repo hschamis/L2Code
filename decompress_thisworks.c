@@ -142,7 +142,7 @@ int main(){
 	run_file = fopen(input_file, "rb");
 	FILE * out_file;
 	out_file = fopen(output_file, "wb");	
-	for (int i = 0; i < 50; i ++){		
+	for (int i = 0; i < 1000; i ++){		
 	// read the headers to find the number of compressed words to read.
 		fread(HeaderArray, sizeof(uint16_t), ALL_HEADERS, run_file); 
 		int N= sizeof(HeaderArray)/sizeof(HeaderArray[0]);
@@ -154,12 +154,13 @@ int main(){
 		N = CWords+COE_WORDS;
 		FlipStuff(CompressedWords,N);
 	// Make Room for headers: 
-		for (int i = ALL_WORDS; i >= 40; i--){
-			CompressedWords[i]=CompressedWords[i-40];
+		for (int k = ALL_WORDS; k >= 40; k--){
+			CompressedWords[k]=CompressedWords[k-40];
 		}
 	// Put headers in CompressedWords
 		for (int j=0;j<ALL_HEADERS; j++){
 			CompressedWords[j]=HeaderArray[j];
+			if ((j<40)&&(j>=24)&&((HeaderArray[j]&0x3FFF)>6)){cout<<"Ranges more than 6 at packet #" << i << endl;}
 		}
 	// decompress
 		/*for (int i = 0; i<56; i++){
